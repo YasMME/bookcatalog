@@ -6,26 +6,17 @@ DROP OWNED BY bookuser CASCADE;
 --Authors(_name, birthyear, deathyear)
 CREATE TABLE Authors (
     name TEXT NOT NULL PRIMARY KEY,
-    birthyear SMALLINT NOT NULL,
+    birthyear SMALLINT,
     deathyear SMALLINT
 );
 
---Publishers(_name, city, country)
-CREATE TABLE Publishers (
-    name TEXT NOT NULL PRIMARY KEY,
-    city TEXT NOT NULL,
-    country TEXT NOT NULL
-);
-
---Books(_title, author_, year, publisher)
+--only allows 1 book per year with a title
+--Books(_title, year_, language)
 CREATE TABLE Books (
     title TEXT NOT NULL,
-    author TEXT NOT NULL,
     year SMALLINT NOT NULL,
-    publisher TEXT NOT NULL,
-    FOREIGN KEY (author) REFERENCES Authors(name),
-    FOREIGN KEY (publisher) REFERENCES Publishers(name),
-    PRIMARY KEY (title, author, year)
+    language TEXT, 
+    PRIMARY KEY (title, year)
 );
 
 --Locations(_name)
@@ -33,12 +24,22 @@ CREATE TABLE Locations (
     name TEXT PRIMARY KEY
 );
 
---OnShelf(_title, shelf)
+--WrittenBy(_title, year, author_)
+--allows multiple authors for the same book
+CREATE TABLE WrittenBy (
+    title TEXT NOT NULL,
+    year SMALLINT NOT NULL,
+    author TEXT NOT NULL,
+    FOREIGN KEY (title, year) REFERENCES Books(title, year),
+    FOREIGN KEY (author) REFERENCES Authors(name),
+    PRIMARY KEY (title, year, author)
+);
+
+--OnShelf(_title, year_, shelf)
+--a book can only be in one location
 CREATE TABLE OnShelf (
     title TEXT NOT NULL,
-    author TEXT NOT NULL,
     year SMALLINT NOT NULL,
     shelf TEXT NOT NULL,
-    FOREIGN KEY (title, author, year) REFERENCES Books(title, author, year),
-    FOREIGN KEY (shelf) REFERENCES Locations(name) 
+    PRIMARY KEY (title, year)
 );
